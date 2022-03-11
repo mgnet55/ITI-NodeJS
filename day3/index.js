@@ -10,7 +10,12 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 
-//insert new
+//static content from ./public/*
+app.use(express.static('public', {
+  index: 'home.html'
+}));
+
+//insert new POST method
 app.post('/add', async (req, res) => {
   const [name, age] = [req.body.name, +req.body.age];
     db.push({name,age});
@@ -24,7 +29,7 @@ app.post('/add', async (req, res) => {
 
 });
 
-//edit with query string
+//edit with query string PATCH method
 app.patch('/edit/:id', async (req, res) => {
   const { id } = req.params
   const [name, age] = [req.body.name, +req.body.age];
@@ -46,7 +51,8 @@ app.patch('/edit/:id', async (req, res) => {
   }
 });
 
-app.get('/delete/:id', async (req, res) => {
+//delete with index DELETE method
+app.delete('/delete/:id', async (req, res) => {
   const { id } = req.params;
   db.splice(id,1);
   console.log(db);
@@ -60,18 +66,14 @@ app.get('/delete/:id', async (req, res) => {
 
 });
 
-
-app.use(express.static('public', {
-  index: 'home.html'
-}));
-
-
-app.get('/show/:id', (req, res) => {
+//get by index GET index
+app.get('/show/:id',async (req, res) => {
   const { id } = req.params;
   res.json(db[id]);
 });
 
-app.get('/show', (req, res) => {
+//get all GET method
+app.get('/show',async (res) => {
   res.json(db);
 })
 
